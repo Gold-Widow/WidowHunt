@@ -1,0 +1,34 @@
+{
+  "environments": [
+    {
+      "id": "production",
+      "name": "Production",
+      "region": "us-east-1",
+      "source": {
+        "branch": "main"
+      },
+      "services": [
+        {
+          "id": "widow-hunt",
+          "name": "Widow Hunt",
+          "type": "fargate",
+          "cpu": 0.5,
+          "memory": 1024,
+          "minInstances": 1,
+          "maxInstances": 1,
+          "buildCommand": "blitz build",
+          "startCommand": "blitz start",
+          "envVariables": {
+            "APP_ENV": "production",
+            "DATABASE_URL": {
+              "fromParameterStore": "production.database-url"
+            },
+            "SESSION_SECRET_KEY": {
+              "fromParameterStore": "production.session-secret-key"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

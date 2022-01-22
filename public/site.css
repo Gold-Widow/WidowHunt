@@ -1,0 +1,38 @@
+:root {
+  --bgGold: #ff9900;
+  --bgGold2: #ffcf20;
+}
+INPUT:-webkit-autofill,
+SELECT:-webkit-autofill,
+TEXTAREA:-webkit-autofill {
+  animation-name: onautofillstart;
+}
+INPUT:not(:-webkit-autofill),
+SELECT:not(:-webkit-autofill),
+TEXTAREA:not(:-webkit-autofill) {
+  animation-name: onautofillcancel;
+}
+@keyframes onautofillstart {
+  from {
+  }
+}
+@keyframes onautofillcancel {
+  from {
+  }
+}
+
+.grad-rep {
+  background: repeating-linear-gradient(45deg, var(--bgGold) 33vw, var(--bgGold2) 100vw, var(--bgGold) 133vw);
+}
+
+.transition-opacity {
+  transition: opacity 2s;
+}
+
+.full-opacity {
+  opacity: 1;
+}
+
+.no-opacity {
+  opacity: 0;
+}

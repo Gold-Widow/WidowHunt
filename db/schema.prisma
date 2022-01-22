@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// https://www.prisma.io/docs/concepts/components/prisma-engines/query-engine#enable-the-n-api-preview
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["filterJson"]
+}
+
+// --------------------------------------
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id             String   @id @default(uuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  name           String?
+  email          String   @unique
+  hashedPassword String?
+  role           Role
+  googleId       String?
+  image          String?
+
+  tokens   Token[]
+  sessions Session[]
+  issues   userEntry[]
+  config   EntryConfig?
+}
+
+model Session {
+  id                 Int       @id @default(autoincrement())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  expiresAt          DateTime?
+  handle             String    @unique
+  hashedSessionToken String?
+  antiCSRFToken      String?
+  publicData         String?
+  privateData        String?
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+model Token {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  hashedToken String
+  type        TokenType
+  // See note below about TokenType enum
+  // type        TokenType
+  expiresAt   DateTime
+  sentTo      String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@unique([hashedToken, type])
+}
+
+// NOTE: It's highly recommended to use an enum for the token type
+//       but enums only work in Postgres.
+//       See: https://blitzjs.com/docs/database-overview#switch-to-postgresql
+enum TokenType {
+  RESET_PASSWORD
+}
+
+model userEntry {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  yaml      String
+  json      Json
+
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+
+  permissions Json @default("{}")
+}
+
+enum configType {
+  SYSTEM_DEFAULT
+  USER_CONFIG
+}
+
+model EntryConfig {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  type configType
+
+  owner   User?   @relation(fields: [ownerId], references: [id])
+  ownerId String?
+
+  json Json
+}
