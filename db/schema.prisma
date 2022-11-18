@@ -100,7 +100,7 @@ model EntryConfig {
   type configType
 
   owner   User?   @relation(fields: [ownerId], references: [id])
-  ownerId String?
+  ownerId String? @unique
 
   json Json
 }
